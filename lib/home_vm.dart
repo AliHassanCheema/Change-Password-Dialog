@@ -1,3 +1,4 @@
+import 'package:changepswd_dialog/model.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 
@@ -6,14 +7,14 @@ class HomeVuModel extends BaseViewModel {
   bool isHiddenOld = true;
   bool isHiddenNew = true;
   bool isHiddenConfirm = true;
-
   String oldPassword = '';
   String newPassword = '';
   String confirmPassword = '';
   late BuildContext mContext;
+  Passwords? passwords;
 
-  changePasswordViewModel(context) {
-    mContext = context;
+  onRefresh() async {
+    notifyListeners();
   }
 
   String? oldPasswordValidator(value) {
@@ -35,11 +36,7 @@ class HomeVuModel extends BaseViewModel {
       return 'Required*';
     } else {
       if (!regex.hasMatch(value)) {
-        return '${'at_least_6_characters_long'}'
-            '${'at_least_1_uppercase_character'}'
-            '${'at_least_1_lowercase_character'}'
-            '${'at_least_1_digit'}'
-            '${'at_least_1_special_character'}';
+        return 'Atleast 1 small,capital,number and \nspecial character should be included*';
       } else {
         return null;
       }
@@ -64,20 +61,17 @@ class HomeVuModel extends BaseViewModel {
     confirmPassword = value;
   }
 
-  setInputPassword(String oldPass, String newPass, String confirmPass,
-      BuildContext context) {
-    oldPassword = oldPass;
-    newPassword = newPass;
-    confirmPassword = confirmPass;
+  setInputPassword(BuildContext context) {
     if (formKey.currentState == null) {
       return;
     }
-
     if (!formKey.currentState!.validate()) {
       return;
     }
-
+    formKey.currentState!.save();
+    passwords = Passwords(oldPassword, newPassword, confirmPassword);
     if (oldPassword == newPassword) {
+      return;
     } else {
       setPassword(context);
     }
@@ -96,10 +90,11 @@ class HomeVuModel extends BaseViewModel {
   }
 
   setPassword(BuildContext context) async {
-    debugPrint(
-        '///////////////////////////////setpassword function called////////////////////////////');
     setBusy(true);
-    formKey.currentState!.save();
-    notifyListeners();
+    // formKey.currentState!.save();
+
+    debugPrint(
+        'OldPassword: $oldPassword >>>>> NewPassword: $newPassword >>>>> ConfirmNewPassword: $confirmPassword');
+    // Navigator.pop(context);
   }
 }

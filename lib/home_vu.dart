@@ -10,12 +10,20 @@ class HomeScreen extends ViewModelBuilderWidget<HomeVuModel> {
       appBar: AppBar(
         title: const Text('Change Password'),
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            showChangePasswordDialog(context, viewModel);
-          },
-          child: const Text('Press'),
+      body: RefreshIndicator(
+        onRefresh: () {
+          return viewModel.onRefresh();
+        },
+        child: Center(
+          child: viewModel.passwords != null
+              ? Text(
+                  'old password :${viewModel.passwords!.oldPassword} \nNew password :${viewModel.passwords!.newPassword}\nConfirm password :${viewModel.passwords!.confirmPassword} ')
+              : ElevatedButton(
+                  onPressed: () {
+                    showChangePasswordDialog(context, viewModel);
+                  },
+                  child: const Text('Press'),
+                ),
         ),
       ),
     );
@@ -59,11 +67,7 @@ showChangePasswordDialog(context, HomeVuModel viewModel) {
                                   color: Color.fromRGBO(0x38, 0x7b, 0x96, 1.0)),
                             ),
                             onPressed: () {
-                              viewModel.setInputPassword(
-                                  viewModel.oldPassword.toString(),
-                                  viewModel.newPassword.toString(),
-                                  viewModel.confirmPassword.toString(),
-                                  context);
+                              viewModel.setInputPassword(context);
                             },
                             child: const Padding(
                               padding: EdgeInsets.all(12.0),
